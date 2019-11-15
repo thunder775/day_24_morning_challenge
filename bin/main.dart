@@ -7,23 +7,12 @@
 // that takes an integer, returning true if the integer is pandigital, and false otherwise.
 //  Examples
 //  isPandigital(98140723568910) ➞ true
+
 import 'dart:math';
 
 bool isPandigital(int number) {
-  int count = 0;
-  String stringNumber = number.toString();
-  List integers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-  for (int j = 0; j < integers.length; j++) {
-    for (int i = 0; i < stringNumber.length; i++) {
-      if (integers[j] == int.parse(stringNumber[i])) {
-        print(stringNumber);
-        count++;
-        print('integer value ${integers[j]}');
-        print(count);
-      }
-    }
-  }
-  return count == 10;
+List listOfIntegers =  number.toString().split('');
+return listOfIntegers.toSet().length==10;
 }
 
 // Challenge 3
@@ -41,37 +30,45 @@ int overlappingRectangles(
     List<Map<String, int>> rect1, List<Map<String, int>> rect2) {
   List rec1 = extractor(rect1);
   List rec2 = extractor(rect2);
-  print('$rec1 ------- $rec2');
-  int length = (rec1[0][1]>=rec2[0][1]?rec2[0][1]:rec1[0][1])-(rec1[0][0]>=rec2[0][0]?rec1[0][0]:rec2[0][0]);
-  int height = (rec1[1][1]>=rec2[1][1]?rec2[1][1]:rec1[1][1])-(rec1[1][0]>=rec2[1][0]?rec1[1][0]:rec2[1][0]);
-  if(length<0&&height<0) {return 0;}
-  print(length);
-  print(height);
-  return (length*height).abs();
+  List overlap = getOverlappingDimensions(rec1, rec2);
+  if (overlap[0] < 0 || overlap[1] < 0) {
+    return 0;
+  }
+  return (overlap[0] * overlap[1]).abs();
 }
 
-List extractor(List<Map<String, int>> rect2) {
-  List rect = [];
-  List temp = [];
-  temp.add(rect2[0]['x']);
-  temp.add(rect2[1]['x']);
-  temp.sort();
-  rect.add(temp);
-  temp = [];
-  temp.add(rect2[0]['y']);
-  temp.add(rect2[1]['y']);
-  rect.add(temp);
-  temp.sort();
+List getOverlappingDimensions(List rect1, List rect2) {
+  List r1x = rect1[0];
+  List r2x = rect2[0];
+  int leftX = max(r1x[0], r2x[0]);
+  int rightX = min(r1x[1], r2x[1]);
+  List r1y = rect1[1];
+  List r2y = rect2[1];
+  int topY = min(r1y[1], r2y[1]);
+  int bottomY = max(r1y[0], r2y[0]);
+
+  return [(rightX - leftX), (topY - bottomY)];
+}
+
+
+
+List extractor(List<Map<String, int>> rectangle) {
+  List<List> rect = [];
+  rect.add(rectangle.map((Map coord) => coord['x']).toList());
+  rect.add(rectangle.map((Map coord) => coord['y']).toList());
+  for (List x in rect) {
+    x.sort;
+  }
   return rect;
 }
 
 main() {
-//  print(isPandigital(1023456789));
-  overlappingRectangles([
+  print(isPandigital(1023456789));
+  print(overlappingRectangles([
     {'x': 1, 'y': 0},
     {'x': 3, 'y': 3}
   ], [
     {'x': 2, 'y': 1},
     {'x': 3, 'y': 2}
-  ]);
+  ]));
 }
